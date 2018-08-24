@@ -75,42 +75,33 @@ function createPyramid(gl, translation, rotationAxis){
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
 
     var verts = [
-       // Front face
-       -1.0, -1.0,  1.0,
-        1.0, -1.0,  1.0,
-        1.0,  1.0,  1.0,
-       -1.0,  1.0,  1.0,
+        -1.0, -2.0,  0.0,
+         1.0, -2.0,  0.0,
+         0.0,  0.0,  0.0,
+        -1.5,  0.0,  0.0,
+         0.0,  1.5,  0.0,
+         1.5,  0.0,  0.0,
 
-       // Back face
-       -1.0, -1.0, -1.0,
-       -1.0,  1.0, -1.0,
-        1.0,  1.0, -1.0,
-        1.0, -1.0, -1.0,
+        -1.5,  0.0,  0.0,
+         0.0,  1.5,  0.0,
+         0.0,  0.0,  2.0,
 
-       // Top face
-       -1.0,  1.0, -1.0,
-       -1.0,  1.0,  1.0,
-        1.0,  1.0,  1.0,
-        1.0,  1.0, -1.0,
+         0.0,  1.5,  0.0,
+         1.5,  0.0,  0.0,
+         0.0,  0.0,  2.0,
 
-       // Bottom face
-       -1.0, -1.0, -1.0,
-        1.0, -1.0, -1.0,
-        1.0, -1.0,  1.0,
-       -1.0, -1.0,  1.0,
+         1.5,  0.0,  0.0,
+         1.0, -2.0,  0.0,
+         0.0,  0.0,  2.0,
 
-       // Right face
-        1.0, -1.0, -1.0,
-        1.0,  1.0, -1.0,
-        1.0,  1.0,  1.0,
-        1.0, -1.0,  1.0,
+         1.0, -2.0,  0.0,
+        -1.0, -2.0,  0.0,
+         0.0,  0.0,  2.0,
 
-       // Left face
-       -1.0, -1.0, -1.0,
-       -1.0, -1.0,  1.0,
-       -1.0,  1.0,  1.0,
-       -1.0,  1.0, -1.0
-       ];
+        -1.0, -2.0,  0.0,
+        -1.5,  0.0,  0.0,
+         0.0,  0.0,  2.0,
+    ];
 
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
 
@@ -118,25 +109,24 @@ function createPyramid(gl, translation, rotationAxis){
     var colorBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
     var faceColors = [
-        [1.0, 0.0, 0.0, 1.0], // Front face
-        [0.0, 1.0, 0.0, 1.0], // Back face
-        [0.0, 0.0, 1.0, 1.0], // Top face
-        [1.0, 1.0, 0.0, 1.0], // Bottom face
-        [1.0, 0.0, 1.0, 1.0], // Right face
-        [0.0, 1.0, 1.0, 1.0]  // Left face
+        [1.0, 0.0, 0.0, 1.0],
+        [0.0, 1.0, 0.0, 1.0],
+        [0.0, 0.0, 1.0, 1.0],
+        [0.0, 1.0, 1.0, 1.0],
+        [1.0, 1.0, 0.0, 1.0],
+        [1.0, 0.0, 1.0, 1.0],
+        [1.0, 1.0, 1.0, 1.0],
     ];
 
+    var vertices = [6, 3, 3, 3, 3, 3];
     // Each vertex must have the color information, that is why the same color is concatenated 4 times, one for each vertex of the cube's face.
     var vertexColors = [];
-    // for (var i in faceColors)
-    // {
-    //     var color = faceColors[i];
-    //     for (var j=0; j < 4; j++)
-    //         vertexColors = vertexColors.concat(color);
-    // }
+    var i = 0;
     for (const color of faceColors){
-        for (var j=0; j < 4; j++)
+        for (var j = 0; j < vertices[i]; j++){
             vertexColors = vertexColors.concat(color);
+        }
+        i++
     }
 
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexColors), gl.STATIC_DRAW);
@@ -145,12 +135,12 @@ function createPyramid(gl, translation, rotationAxis){
     var pyramidIndexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, pyramidIndexBuffer);
     var pyramidIndices = [
-        0, 1, 2,      0, 2, 3,    // Front face
-        4, 5, 6,      4, 6, 7,    // Back face
-        8, 9, 10,     8, 10, 11,  // Top face
-        12, 13, 14,   12, 14, 15, // Bottom face
-        16, 17, 18,   16, 18, 19, // Right face
-        20, 21, 22,   20, 22, 23  // Left face
+        0, 1, 2,   0, 2, 3,   3, 2, 4,  4, 2, 5,  1, 2, 5, // pent
+        6, 7, 8,
+        9, 10, 11,
+        12, 13, 14,
+        15, 16, 17,
+        18, 19, 20,
     ];
 
     // gl.ELEMENT_ARRAY_BUFFER: Buffer used for element indices.
@@ -158,9 +148,10 @@ function createPyramid(gl, translation, rotationAxis){
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(pyramidIndices), gl.STATIC_DRAW);
 
     var pyramid = {
-            buffer:vertexBuffer, colorBuffer:colorBuffer, indices:pyramidIndexBuffer,
-            vertSize:3, nVerts:24, colorSize:4, nColors: 24, nIndices:36,
-            primtype:gl.TRIANGLES, modelViewMatrix: mat4.create(), currentTime : Date.now()};
+        buffer:vertexBuffer, colorBuffer:colorBuffer, indices:pyramidIndexBuffer,
+        vertSize:3, nVerts:21, colorSize:4, nColors: 20, nIndices:30,
+        primtype:gl.TRIANGLES, modelViewMatrix: mat4.create(), currentTime : Date.now()
+    };
 
     mat4.translate(pyramid.modelViewMatrix, pyramid.modelViewMatrix, translation);
 
@@ -178,7 +169,6 @@ function createPyramid(gl, translation, rotationAxis){
         // vec3 axis the axis to rotate around
         mat4.rotate(this.modelViewMatrix, this.modelViewMatrix, angle, rotationAxis);
     };
-
     return pyramid;
 }
 
@@ -303,42 +293,40 @@ function createOchta(gl, translation, rotationAxis){
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
 
     var verts = [
-       // Front face
-       -1.0, -1.0,  1.0,
-        1.0, -1.0,  1.0,
-        1.0,  1.0,  1.0,
-       -1.0,  1.0,  1.0,
+        // Top
+        -1.5,  0.0,  0.0,
+         0.0,  0.0,  1.5,
+         0.0,  1.5,  0.0,
 
-       // Back face
-       -1.0, -1.0, -1.0,
-       -1.0,  1.0, -1.0,
-        1.0,  1.0, -1.0,
-        1.0, -1.0, -1.0,
+         0.0,  0.0,  1.5,
+         1.5,  0.0,  0.0,
+         0.0,  1.5,  0.0,
 
-       // Top face
-       -1.0,  1.0, -1.0,
-       -1.0,  1.0,  1.0,
-        1.0,  1.0,  1.0,
-        1.0,  1.0, -1.0,
+         1.5,  0.0,  0.0,
+         0.0,  0.0, -1.5,
+         0.0,  1.5,  0.0,
 
-       // Bottom face
-       -1.0, -1.0, -1.0,
-        1.0, -1.0, -1.0,
-        1.0, -1.0,  1.0,
-       -1.0, -1.0,  1.0,
+         0.0,  0.0, -1.5,
+        -1.5,  0.0,  0.0,
+         0.0,  1.5,  0.0,
 
-       // Right face
-        1.0, -1.0, -1.0,
-        1.0,  1.0, -1.0,
-        1.0,  1.0,  1.0,
-        1.0, -1.0,  1.0,
+         // Bottom
+        -1.5,  0.0,  0.0,
+         0.0,  0.0,  1.5,
+         0.0, -1.5,  0.0,
 
-       // Left face
-       -1.0, -1.0, -1.0,
-       -1.0, -1.0,  1.0,
-       -1.0,  1.0,  1.0,
-       -1.0,  1.0, -1.0
-       ];
+         0.0,  0.0,  1.5,
+         1.5,  0.0,  0.0,
+         0.0, -1.5,  0.0,
+
+         1.5,  0.0,  0.0,
+         0.0,  0.0, -1.5,
+         0.0, -1.5,  0.0,
+
+         0.0,  0.0, -1.5,
+        -1.5,  0.0,  0.0,
+         0.0, -1.5,  0.0,
+    ];
 
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
 
@@ -346,25 +334,23 @@ function createOchta(gl, translation, rotationAxis){
     var colorBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
     var faceColors = [
-        [1.0, 0.0, 0.0, 1.0], // Front face
-        [0.0, 1.0, 0.0, 1.0], // Back face
-        [0.0, 0.0, 1.0, 1.0], // Top face
-        [1.0, 1.0, 0.0, 1.0], // Bottom face
-        [1.0, 0.0, 1.0, 1.0], // Right face
-        [0.0, 1.0, 1.0, 1.0]  // Left face
+        [1.0, 0.0, 0.0, 1.0],
+        [0.847, 0.760, 0.411, 1.0],
+        [0.0, 0.0, 1.0, 1.0],
+        [0.721, 0.721, 0.721, 1.0],
+        [0.035, 0.443, 0.117, 1.0],
+        [0.929, 0.490, 0.858, 1.0],
+        [0.964, 0.376, 0.192, 1.0],
+        [0.443, 0.035, 0.360, 1.0],
+
     ];
 
     // Each vertex must have the color information, that is why the same color is concatenated 4 times, one for each vertex of the cube's face.
     var vertexColors = [];
-    // for (var i in faceColors)
-    // {
-    //     var color = faceColors[i];
-    //     for (var j=0; j < 4; j++)
-    //         vertexColors = vertexColors.concat(color);
-    // }
     for (const color of faceColors){
-        for (var j=0; j < 4; j++)
+        for (var j=0; j < 3; j++){
             vertexColors = vertexColors.concat(color);
+        }
     }
 
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexColors), gl.STATIC_DRAW);
@@ -373,12 +359,7 @@ function createOchta(gl, translation, rotationAxis){
     var ochtaIndexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ochtaIndexBuffer);
     var ochtaIndices = [
-        0, 1, 2,      0, 2, 3,    // Front face
-        4, 5, 6,      4, 6, 7,    // Back face
-        8, 9, 10,     8, 10, 11,  // Top face
-        12, 13, 14,   12, 14, 15, // Bottom face
-        16, 17, 18,   16, 18, 19, // Right face
-        20, 21, 22,   20, 22, 23  // Left face
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23
     ];
 
     // gl.ELEMENT_ARRAY_BUFFER: Buffer used for element indices.
@@ -386,9 +367,10 @@ function createOchta(gl, translation, rotationAxis){
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(ochtaIndices), gl.STATIC_DRAW);
 
     var ochta = {
-            buffer:vertexBuffer, colorBuffer:colorBuffer, indices:ochtaIndexBuffer,
-            vertSize:3, nVerts:24, colorSize:4, nColors: 24, nIndices:36,
-            primtype:gl.TRIANGLES, modelViewMatrix: mat4.create(), currentTime : Date.now()};
+        buffer:vertexBuffer, colorBuffer:colorBuffer, indices:ochtaIndexBuffer,
+        vertSize:3, nVerts:24, colorSize:4, nColors: 24, nIndices:24,
+        primtype:gl.TRIANGLES, modelViewMatrix: mat4.create(), currentTime : Date.now()
+    };
 
     mat4.translate(ochta.modelViewMatrix, ochta.modelViewMatrix, translation);
 
@@ -406,7 +388,6 @@ function createOchta(gl, translation, rotationAxis){
         // vec3 axis the axis to rotate around
         mat4.rotate(this.modelViewMatrix, this.modelViewMatrix, angle, rotationAxis);
     };
-
     return ochta;
 }
 
