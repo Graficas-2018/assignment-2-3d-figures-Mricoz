@@ -179,42 +179,63 @@ function createScutoid(gl, translation, rotationAxis){
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
 
     var verts = [
-       // Front face
-       -1.0, -1.0,  1.0,
-        1.0, -1.0,  1.0,
-        1.0,  1.0,  1.0,
-       -1.0,  1.0,  1.0,
+        // Hex
+        -1.0,  2.0, -1.5,
+         1.0,  2.0, -1.5,
+         0.0,  2.0,  0.0, // centro
+         2.0,  2.0,  0.0,
+         1.0,  2.0,  1.5,
+        -1.0,  2.0,  1.5,
+        -2.0,  2.0,  0.0,
 
-       // Back face
-       -1.0, -1.0, -1.0,
-       -1.0,  1.0, -1.0,
-        1.0,  1.0, -1.0,
-        1.0, -1.0, -1.0,
+        // Pent
+        -1.0, -2.0, -1.5,
+         1.0, -2.0, -1.5,
+         0.0, -2.0,  0.0, // centro
+         2.0, -2.0,  0.0,
+         0.0, -2.0,  1.5,
+        -2.0, -2.0,  0.0,
 
-       // Top face
-       -1.0,  1.0, -1.0,
-       -1.0,  1.0,  1.0,
-        1.0,  1.0,  1.0,
-        1.0,  1.0, -1.0,
+        // Rect 1
+        -1.0,  2.0, -1.5,
+         1.0,  2.0, -1.5,
+         1.0, -2.0, -1.5,
+        -1.0, -2.0, -1.5,
 
-       // Bottom face
-       -1.0, -1.0, -1.0,
-        1.0, -1.0, -1.0,
-        1.0, -1.0,  1.0,
-       -1.0, -1.0,  1.0,
+        // Rect 2
+         1.0,  2.0, -1.5,
+         2.0,  2.0,  0.0,
+         2.0, -2.0,  0.0,
+         1.0, -2.0, -1.5,
 
-       // Right face
-        1.0, -1.0, -1.0,
-        1.0,  1.0, -1.0,
-        1.0,  1.0,  1.0,
-        1.0, -1.0,  1.0,
+         // Triangulo
+         -1.0,  2.0,  1.5,
+          1.0,  2.0,  1.5,
+          0.0,  0.7,  1.5,
 
-       // Left face
-       -1.0, -1.0, -1.0,
-       -1.0, -1.0,  1.0,
-       -1.0,  1.0,  1.0,
-       -1.0,  1.0, -1.0
-       ];
+          // Cara junto al triangulo
+          0.0, -2.0,  1.5,
+          2.0, -2.0,  0.0,
+          0.0,  0.7,  1.5,
+          2.0,  0.7,  0.0,
+          1.0,  2.0,  1.5,
+          2.0,  2.0,  0.0,
+
+          // Cara junto al triangulo
+          0.0, -2.0,  1.5,
+         -2.0, -2.0,  0.0,
+          0.0,  0.7,  1.5,
+         -2.0,  0.7,  0.0,
+         -1.0,  2.0,  1.5,
+         -2.0,  2.0,  0.0,
+
+         // Rect 3
+         -2.0,  2.0,  0.0,
+         -1.0,  2.0, -1.5,
+         -2.0, -2.0,  0.0,
+         -1.0, -2.0, -1.5
+
+    ];
 
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
 
@@ -222,25 +243,25 @@ function createScutoid(gl, translation, rotationAxis){
     var colorBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
     var faceColors = [
-        [1.0, 0.0, 0.0, 1.0], // Front face
-        [0.0, 1.0, 0.0, 1.0], // Back face
-        [0.0, 0.0, 1.0, 1.0], // Top face
-        [1.0, 1.0, 0.0, 1.0], // Bottom face
-        [1.0, 0.0, 1.0, 1.0], // Right face
-        [0.0, 1.0, 1.0, 1.0]  // Left face
+        [0.180, 0.282, 0.760, 1.0],
+        [0.835, 0.376, 0.101, 1.0],
+        [0.760, 0.180, 0.180, 1.0],
+        [0.525, 0.078, 0.741, 1.0],
+        [0.776, 0.772, 0.023, 1.0],
+        [0.929, 0.490, 0.858, 1.0],
+        [0.109, 0.549, 0.709, 1.0],
+        [0.090, 0.588, 0.345, 1.0],
     ];
 
+    var vertices = [7, 6, 4, 4, 3, 6, 6, 4];
     // Each vertex must have the color information, that is why the same color is concatenated 4 times, one for each vertex of the cube's face.
     var vertexColors = [];
-    // for (var i in faceColors)
-    // {
-    //     var color = faceColors[i];
-    //     for (var j=0; j < 4; j++)
-    //         vertexColors = vertexColors.concat(color);
-    // }
+    var i = 0;
     for (const color of faceColors){
-        for (var j=0; j < 4; j++)
+        for (var j = 0; j < vertices[i]; j++){
             vertexColors = vertexColors.concat(color);
+        }
+        i++
     }
 
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexColors), gl.STATIC_DRAW);
@@ -249,12 +270,14 @@ function createScutoid(gl, translation, rotationAxis){
     var scutoidIndexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, scutoidIndexBuffer);
     var scutoidIndices = [
-        0, 1, 2,      0, 2, 3,    // Front face
-        4, 5, 6,      4, 6, 7,    // Back face
-        8, 9, 10,     8, 10, 11,  // Top face
-        12, 13, 14,   12, 14, 15, // Bottom face
-        16, 17, 18,   16, 18, 19, // Right face
-        20, 21, 22,   20, 22, 23  // Left face
+        0, 1, 2,  1, 2, 3,  3, 2, 4,  4, 2, 5,  5, 2, 6,  6, 2, 0,
+        7, 8, 9,  8, 9, 10,  10, 9, 11,  11, 9, 12,  12, 9, 7,
+        13, 14, 15,  13, 15, 16,
+        17, 18, 20,  20, 19, 18,
+        21, 22, 23,
+        24, 25, 26,  26, 27, 25,  26, 28, 29,  26, 27, 29,
+        30, 31, 32,  32, 33, 31,  32, 34, 35,  32, 33, 35,
+        36, 37, 38,  37, 38, 39
     ];
 
     // gl.ELEMENT_ARRAY_BUFFER: Buffer used for element indices.
@@ -263,8 +286,9 @@ function createScutoid(gl, translation, rotationAxis){
 
     var scutoid = {
             buffer:vertexBuffer, colorBuffer:colorBuffer, indices:scutoidIndexBuffer,
-            vertSize:3, nVerts:24, colorSize:4, nColors: 24, nIndices:36,
-            primtype:gl.TRIANGLES, modelViewMatrix: mat4.create(), currentTime : Date.now()};
+            vertSize:3, nVerts:40, colorSize:4, nColors: 40, nIndices:78,
+            primtype:gl.TRIANGLES, modelViewMatrix: mat4.create(), currentTime : Date.now()
+        };
 
     mat4.translate(scutoid.modelViewMatrix, scutoid.modelViewMatrix, translation);
 
